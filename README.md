@@ -1,5 +1,8 @@
 # dev-digest
 
+![Tokens per run](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FMegjafari%2Fdev-digest%2Fmain%2Fdigests%2Fbadge.json)
+
+![ci](https://github.com/Megjafari/dev-digest/actions/workflows/ci.yml/badge.svg)
 
 A .NET console app that runs every morning on GitHub Actions. It collects fresh headlines and job ads, has Claude summarize each topic in a few sentences, and posts the result to Discord. It never sends the same link twice.
 

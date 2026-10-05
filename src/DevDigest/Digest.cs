@@ -1,7 +1,7 @@
 static class Digest
 {
     /// <summary>One section: heading, AI summary, then the links. Empty sections are skipped unless <paramref name="emptyText"/> is given.</summary>
-    public static async Task<string> RenderAsync(Summarizer summarizer, string heading, List<Item> items, string focus, string? emptyText = null)
+    public static async Task<string> RenderAsync(ISummarizer summarizer, string heading, List<Item> items, string focus, string? emptyText = null)
     {
         if (items.Count == 0)
             return emptyText is null ? "" : $"{heading}\n\n{emptyText}\n\n";

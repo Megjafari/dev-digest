@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 
-class Summarizer(HttpClient http)
+class Summarizer(HttpClient http) : ISummarizer
 {
     const string Model = "claude-haiku-4-5-20251001";
 
@@ -15,6 +15,9 @@ class Summarizer(HttpClient http)
         "no emojis and no dash characters.";
 
     static readonly string? Key = Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY");
+
+    public int InputTokens { get; private set; }
+    public int OutputTokens { get; private set; }
     static readonly string? WorkspaceId = Environment.GetEnvironmentVariable("ANTHROPIC_WORKSPACE_ID");
 
     public async Task<string?> SummarizeAsync(List<Item> items, string focus)
@@ -53,6 +56,11 @@ class Summarizer(HttpClient http)
             }
 
             using var doc = JsonDocument.Parse(body);
+
+            var usage = doc.RootElement.GetProperty("usage");
+            InputTokens += usage.GetProperty("input_tokens").GetInt32();
+            OutputTokens += usage.GetProperty("output_tokens").GetInt32();
+
             return doc.RootElement.GetProperty("content")[0].GetProperty("text").GetString()?.Trim();
         }
         catch (Exception e)

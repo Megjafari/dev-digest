@@ -36,4 +36,10 @@ Console.WriteLine($"Wrote {path}");
 
 if (!dryRun) seen.Save();
 
+var tokens = summarizer.InputTokens + summarizer.OutputTokens;
+Console.WriteLine($"Tokens used: {summarizer.InputTokens} in, {summarizer.OutputTokens} out");
+if (!dryRun && tokens > 0)
+    File.WriteAllText(Path.Combine(outDir, "badge.json"),
+        System.Text.Json.JsonSerializer.Serialize(new { schemaVersion = 1, label = "tokens per run", message = tokens.ToString(), color = "blue" }));
+
 await Discord.SendAsync(http, Environment.GetEnvironmentVariable("DISCORD_WEBHOOK"), markdown);
