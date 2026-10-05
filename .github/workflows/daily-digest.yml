@@ -2,7 +2,7 @@ name: daily-digest
 
 on:
   schedule:
-    - cron: "0 6 * * *" # 06:00 UTC, ungefar 08:00 svensk sommartid
+    - cron: "0 6 * * *" # 06:00 UTC, about 08:00 Swedish summer time
   workflow_dispatch:
 
 permissions:
@@ -21,6 +21,7 @@ jobs:
       - name: Run digest
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: dotnet run --project src/DevDigest
 
       - name: Commit digest

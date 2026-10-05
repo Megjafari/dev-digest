@@ -19,8 +19,7 @@ static class Config
         new(War, "Al Jazeera", "https://www.aljazeera.com/xml/rss/all.xml", Conflict),
         new(War, "BBC Middle East", "https://feeds.bbci.co.uk/news/world/middle_east/rss.xml", Conflict),
         new(War, "The Guardian", "https://www.theguardian.com/world/middleeast/rss", Conflict),
-        new(War, "Times of Israel", "https://www.timesofisrael.com/feed/", Conflict),
-
+        
         new(Dev, "Hacker News", "https://hnrss.org/frontpage"),
         new(Dev, "dev.to devops", "https://dev.to/feed/tag/devops"),
         new(Dev, "CNCF", "https://www.cncf.io/feed/"),

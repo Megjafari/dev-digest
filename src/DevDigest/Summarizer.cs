@@ -15,6 +15,7 @@ class Summarizer(HttpClient http)
         "no emojis and no dash characters.";
 
     static readonly string? Key = Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY");
+    static readonly string? WorkspaceId = Environment.GetEnvironmentVariable("ANTHROPIC_WORKSPACE_ID");
 
     public async Task<string?> SummarizeAsync(List<Item> items, string focus)
     {
@@ -41,6 +42,7 @@ class Summarizer(HttpClient http)
             };
             req.Headers.Add("x-api-key", Key);
             req.Headers.Add("anthropic-version", "2023-06-01");
+            if (!string.IsNullOrWhiteSpace(WorkspaceId)) req.Headers.Add("anthropic-workspace-id", WorkspaceId);
 
             using var resp = await http.SendAsync(req);
             var body = await resp.Content.ReadAsStringAsync();
