@@ -27,7 +27,7 @@
 
 dev-digest is a .NET console app that runs every morning on GitHub Actions. It collects fresh headlines and job ads from RSS feeds and an open job API, lets Claude write a short summary for each topic, and posts the result to a Discord channel. Every link is delivered exactly once.
 
-Each digest has four sections, and each section is a summary followed by the links it is based on:
+Each digest starts with a verse of the day (reference and link), followed by four sections. Each section is a summary followed by the links it is based on:
 
 | Section | Sources | Notes |
 |---|---|---|
@@ -84,6 +84,7 @@ dev-digest/
 │   ├── ISummarizer.cs        summarizer contract
 │   ├── Summarizer.cs         Claude API implementation
 │   ├── Digest.cs             renders one section as markdown
+│   ├── VerseOfTheDay.cs      verse of the day from OurManna, with a fallback link
 │   ├── Discord.cs            message splitting and delivery
 │   └── Models.cs             Item and Feed records
 └── tests/DevDigest.Tests/    xUnit tests
@@ -147,13 +148,19 @@ The tests cover the logic that is easiest to get wrong: deduplication and batch 
 * **Haiku 4.5.** Short summaries of short inputs do not need a larger model.
 * **Graceful degradation.** A failing source is logged and skipped, and a missing or failing Claude API still produces a digest with links.
 * **Small files with one job each.** `Program.cs` only orchestrates, and the summarizer sits behind an interface.
+* **Verse of the day via OurManna.** BibleGateway returns 403 to scripts, so the verse comes from an API that allows it. Only the reference and a link are included, not the text, since the digests are committed to a public repo.
 
 ## Cost
 
 A typical run uses around 2,500 tokens, which is about a cent or less on Claude Haiku 4.5. The badge at the top shows the token count of the latest run. GitHub Actions is free for public repositories, and the RSS feeds, JobTech and Discord webhooks are free.
 
+## Known limitations
+
+* A source that fails, for example with a 403 from a site that blocks bots, is logged and skipped with no retries.
+* Summaries are overviews built from headlines and snippets, not deep reads of the articles. The links are there for a reason.
+* The verse of the day comes from OurManna, because BibleGateway blocks automated requests. It is not necessarily the same verse BibleGateway shows. If OurManna is unavailable, a plain link to BibleGateway is used instead.
+* Scheduled workflows on GitHub can start 5 to 30 minutes late, and the cron time is in UTC, so the local time shifts by an hour when daylight saving time changes.
 
 ## License
 
 Released under the [MIT License](LICENSE).
-
