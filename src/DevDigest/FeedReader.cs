@@ -31,7 +31,7 @@ static class FeedReader
         }
     }
 
-    static bool Matches(Feed feed, Item item) =>
+    internal static bool Matches(Feed feed, Item item) =>
         feed.Keywords is null ||
         feed.Keywords.Any(k => $"{item.Title} {item.Snippet}".Contains(k, StringComparison.OrdinalIgnoreCase));
 

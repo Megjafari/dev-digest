@@ -23,7 +23,7 @@ static class Discord
     }
 
     /// <summary>Splits on line breaks so no link is cut in half.</summary>
-    static IEnumerable<string> Split(string text)
+    internal static IEnumerable<string> Split(string text)
     {
         var current = new StringBuilder();
         foreach (var raw in text.Split('\n'))

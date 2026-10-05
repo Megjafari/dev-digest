@@ -11,4 +11,8 @@
     <PackageReference Include="System.ServiceModel.Syndication" Version="10.0.0" />
   </ItemGroup>
 
+    <ItemGroup>
+    <InternalsVisibleTo Include="DevDigest.Tests" />
+  </ItemGroup>
+
 </Project>

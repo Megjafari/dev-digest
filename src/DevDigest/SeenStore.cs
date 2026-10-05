@@ -9,7 +9,7 @@ class SeenStore
     readonly Dictionary<string, string> _seen;
     readonly string _today = DateTime.UtcNow.ToString("yyyy-MM-dd");
 
-    SeenStore(Dictionary<string, string> seen) => _seen = seen;
+    internal SeenStore(Dictionary<string, string> seen) => _seen = seen;
 
     public static SeenStore Load()
     {
