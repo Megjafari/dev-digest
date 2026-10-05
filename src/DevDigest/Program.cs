@@ -8,6 +8,8 @@ http.DefaultRequestHeaders.UserAgent.ParseAdd("dev-digest/1.0 (+https://github.c
 var seen = SeenStore.Load();
 var summarizer = new Summarizer(http);
 
+var verse = await VerseOfTheDay.GetAsync(http);
+
 var news = "";
 foreach (var group in Config.Feeds.GroupBy(f => f.Section))
 {
@@ -26,7 +28,7 @@ foreach (var query in Config.JobQueries)
 }
 var jobsMd = await Digest.RenderAsync(summarizer, "## New job ads", jobs, Config.JobsFocus, "No new job ads today.");
 
-var markdown = $"# Digest {today}\n\n## News\n\n{(news.Length > 0 ? news : "No new news today.\n\n")}{jobsMd}";
+var markdown = $"# Digest {today}\n\n{verse}## News\n\n{(news.Length > 0 ? news : "No new news today.\n\n")}{jobsMd}";
 
 var outDir = dryRun ? "digests-preview" : "digests";
 Directory.CreateDirectory(outDir);
