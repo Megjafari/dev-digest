@@ -481,3 +481,7 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 digests-preview/
+
+# Generated digests are sent to Discord, not committed
+digests/*.md
+digests-preview/
