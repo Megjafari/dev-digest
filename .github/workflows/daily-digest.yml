@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   digest:
@@ -18,22 +18,21 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # The seen list lives in the Actions cache instead of the repository, so nothing is committed
+      - name: Restore seen list
+        uses: actions/cache/restore@v4
+        with:
+          path: digests/seen.json
+          key: seen-${{ github.run_id }}
+          restore-keys: seen-
+
       - name: Run digest
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: dotnet run --project src/DevDigest
 
-      - name: Commit digest
-        env:
-          COMMIT_EMAIL: ${{ vars.COMMIT_EMAIL }}
-        run: |
-          git config user.name "Megjafari"
-          git config user.email "$COMMIT_EMAIL"
-          git add digests
-          if git diff --cached --quiet; then
-            echo "Nothing to commit"
-          else
-            git commit -m "digest: $(date -u +%F)"
-            git push
-          fi
+      - name: Save seen list
+        uses: actions/cache/save@v4
+        with:
+          path: digests/seen.json
+          key: seen-${{ github.run_id }}

@@ -6,12 +6,17 @@ static class Config
     const string War = "War and conflicts";
     const string Dev = "DevOps and software development";
     const string Ai = "AI worldwide";
+    const string Iran = "Iran";
+    const string Sweden = "Sweden";
 
     static readonly string[] Conflict =
     [
         "iran", "tehran", "israel", "gaza", "palestin", "hamas", "hezbollah",
         "west bank", "lebanon", "houthi", "idf", "netanyahu", "khamenei",
     ];
+
+    // The Persian outlets cover the whole region, so keep only items that mention Iran
+    static readonly string[] IranWords = ["ایران", "تهران", "iran"];
 
     public static readonly Feed[] Feeds =
     [
@@ -20,6 +25,16 @@ static class Config
         new(War, "BBC Middle East", "https://feeds.bbci.co.uk/news/world/middle_east/rss.xml", Conflict),
         new(War, "The Guardian", "https://www.theguardian.com/world/middleeast/rss", Conflict),
         
+        // Persian and English, independent and state-linked outlets side by side
+        new(Iran, "BBC Persian", "https://feeds.bbci.co.uk/persian/rss.xml", IranWords),
+        new(Iran, "Independent Persian", "https://www.independentpersian.com/rss.xml", IranWords),
+        new(Iran, "Tehran Times", "https://www.tehrantimes.com/rss"),
+        new(Iran, "Press TV", "https://www.presstv.ir/rss.xml"),
+
+        new(Sweden, "SVT Nyheter", "https://www.svt.se/nyheter/rss.xml"),
+        new(Sweden, "Dagens Nyheter", "https://www.dn.se/rss/"),
+        new(Sweden, "The Local Sweden", "https://www.thelocal.se/feed"),
+
         new(Dev, "Hacker News", "https://hnrss.org/frontpage"),
         new(Dev, "dev.to devops", "https://dev.to/feed/tag/devops"),
         new(Dev, "CNCF", "https://www.cncf.io/feed/"),
@@ -44,14 +59,4 @@ static class Config
         "molnutvecklare azure",
         "junior systemutvecklare",
     ];
-
-    public static readonly Dictionary<string, string> Focus = new()
-    {
-        [War] = "This is conflict news. Stay strictly neutral, attribute every claim to its source (for example 'according to Al Jazeera'), and point out where sources differ.",
-        [Dev] = "The reader is a backend and cloud developer working with .NET, Azure, Docker, Kubernetes and PostgreSQL. Lead with what matters most for that work.",
-        [Ai] = "Lead with the most significant developments and say briefly why they matter.",
-    };
-
-    public const string JobsFocus =
-        "These are new job ads (the source in brackets is the employer). Say what kinds of roles and employers show up, and mention any that stand out for a junior .NET, cloud or DevOps developer in Gothenburg.";
 }
