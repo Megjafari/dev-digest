@@ -38,6 +38,7 @@ var path = Path.Combine(outDir, $"{today}.md");
 File.WriteAllText(path, markdown);
 Console.WriteLine($"Wrote {path}");
 
-if (!dryRun) seen.Save();
-
-await Discord.SendAsync(http, Environment.GetEnvironmentVariable("DISCORD_WEBHOOK"), title, sections);
+// Only remember the links once Discord has them, so a failed or skipped delivery sends them again next time
+var delivered = await Discord.SendAsync(http, Environment.GetEnvironmentVariable("DISCORD_WEBHOOK"), title, sections);
+if (!dryRun && delivered) seen.Save();
+else if (!dryRun) Console.WriteLine("Nothing delivered, seen list left unchanged");

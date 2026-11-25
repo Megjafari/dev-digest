@@ -11,13 +11,16 @@ static class Discord
 
     internal record Embed(string Title, string Description, int Color);
 
-    /// <summary>Posts the digest as embeds, one per section, packed into as few messages as Discord allows.</summary>
-    public static async Task SendAsync(HttpClient http, string? webhook, string title, IEnumerable<Section> sections)
+    /// <summary>
+    /// Posts the digest as embeds, one per section, packed into as few messages as Discord allows.
+    /// Returns false if there is no webhook and nothing was sent.
+    /// </summary>
+    public static async Task<bool> SendAsync(HttpClient http, string? webhook, string title, IEnumerable<Section> sections)
     {
         if (string.IsNullOrWhiteSpace(webhook))
         {
             Console.WriteLine("DISCORD_WEBHOOK not set, skipping delivery");
-            return;
+            return false;
         }
 
         // Never ping anyone, even if a headline contains @everyone
@@ -33,11 +36,13 @@ static class Discord
             first = false;
             await Task.Delay(1000); // stay under the webhook rate limit
         }
+        return true;
     }
 
     /// <summary>
-    /// Throws if Discord does not accept the message, so the workflow fails and the seen list
-    /// is not saved. The same links are then sent again on the next run instead of being lost.
+    /// Throws if Discord does not accept the message, so the seen list is not saved and the
+    /// same links are sent again on the next run instead of being lost. If an earlier message
+    /// of the same digest got through, that part is sent twice, which beats losing the rest.
     /// </summary>
     static async Task PostAsync(HttpClient http, string webhook, object payload)
     {
@@ -47,9 +52,12 @@ static class Discord
             Console.WriteLine($"Discord: {(int)resp.StatusCode}");
             if (resp.IsSuccessStatusCode) return;
 
-            if (resp.StatusCode == HttpStatusCode.TooManyRequests && attempt < 3)
+            // 429 (rate limit) and 5xx (Discord having trouble) are worth another try. Timeouts are not
+            // retried here, since Discord may have posted the message anyway; the next scheduled run retries instead.
+            var transient = resp.StatusCode == HttpStatusCode.TooManyRequests || (int)resp.StatusCode >= 500;
+            if (transient && attempt < 4)
             {
-                await Task.Delay(resp.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(2));
+                await Task.Delay(resp.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(5 * attempt));
                 continue;
             }
             throw new HttpRequestException($"Discord {(int)resp.StatusCode}: {await resp.Content.ReadAsStringAsync()}");

@@ -47,4 +47,17 @@ public class SeenStoreTests
 
         Assert.Single(result);
     }
+
+    [Fact]
+    public void TakeNew_LeavesItemsBeyondMaxForTheNextRun()
+    {
+        var store = new SeenStore([]);
+        var items = Enumerable.Range(0, 10).Select(i => Make($"link{i}")).ToList();
+
+        var first = store.TakeNew(items, 3);
+        var second = store.TakeNew(items, 100);
+
+        Assert.Equal(3, first.Count);
+        Assert.Equal(7, second.Count);
+    }
 }
