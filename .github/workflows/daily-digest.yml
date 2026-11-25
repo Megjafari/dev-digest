@@ -1,8 +1,13 @@
 name: daily-digest
 
 on:
+  # GitHub often starts scheduled runs hours late, and the top of the hour is the busiest time.
+  # So start early, at odd minutes, with backups. The first run that starts sends the digest;
+  # later ones the same day see last-sent.txt and stop. 02:23 UTC is 03:23 in Swedish winter time.
   schedule:
-    - cron: "0 6 * * *" # 06:00 UTC, about 08:00 Swedish summer time
+    - cron: "23 2 * * *"
+    - cron: "47 2 * * *"
+    - cron: "13 3 * * *"
   workflow_dispatch:
 
 permissions:
@@ -31,6 +36,13 @@ jobs:
           key: seen-${{ github.run_id }}
           restore-keys: seen-
 
+      - name: Restore last sent date
+        uses: actions/cache/restore@v4
+        with:
+          path: digests/last-sent.txt
+          key: last-sent-${{ github.run_id }}
+          restore-keys: last-sent-
+
       - name: Run digest
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
@@ -41,3 +53,9 @@ jobs:
         with:
           path: digests/seen.json
           key: seen-${{ github.run_id }}
+
+      - name: Save last sent date
+        uses: actions/cache/save@v4
+        with:
+          path: digests/last-sent.txt
+          key: last-sent-${{ github.run_id }}

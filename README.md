@@ -111,7 +111,7 @@ DRY_RUN=1 dotnet run --project src/DevDigest
 
 1. Fork the repository.
 2. Add the secret listed under [Configuration](#configuration).
-3. Run the `daily-digest` workflow once from the Actions tab. After that it runs on its own at 06:00 UTC.
+3. Run the `daily-digest` workflow once from the Actions tab. After that it runs on its own early every morning.
 
 The first run sends everything that is current. After that you only get what is new.
 
@@ -148,7 +148,7 @@ Nothing. GitHub Actions is free for public repositories, and the RSS feeds, JobT
 
 * A source that fails, for example with a 403 from a site that blocks bots, is logged and skipped with no retries.
 * The verse of the day comes from OurManna, because BibleGateway blocks automated requests. It is not necessarily the same verse BibleGateway shows. If OurManna is unavailable, a plain link to BibleGateway is used instead.
-* Scheduled workflows on GitHub can start 5 to 30 minutes late, and the cron time is in UTC, so the local time shifts by an hour when daylight saving time changes.
+* Scheduled workflows on GitHub can start hours late. The workflow is scheduled at 02:23, 02:47 and 03:13 UTC as backups, and only the first run each day sends (it records the date in `digests/last-sent.txt` in the Actions cache). A manual run always sends. The cron time is in UTC, so the local time shifts by an hour when daylight saving time changes.
 
 ## License
 

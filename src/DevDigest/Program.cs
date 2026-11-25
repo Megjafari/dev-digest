@@ -2,6 +2,15 @@
 var dryRun = Environment.GetEnvironmentVariable("DRY_RUN") == "1";
 var today = DateTime.UtcNow.ToString("yyyy-MM-dd");
 
+// The workflow has several schedules as backups for GitHub's delays. Only the first one each day sends.
+const string LastSentPath = "digests/last-sent.txt";
+if (Environment.GetEnvironmentVariable("GITHUB_EVENT_NAME") == "schedule" &&
+    File.Exists(LastSentPath) && File.ReadAllText(LastSentPath).Trim() == today)
+{
+    Console.WriteLine($"Digest for {today} already sent, nothing to do");
+    return;
+}
+
 using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(90) };
 http.DefaultRequestHeaders.UserAgent.ParseAdd("dev-digest/1.0 (+https://github.com/Megjafari)");
 
@@ -40,5 +49,9 @@ Console.WriteLine($"Wrote {path}");
 
 // Only remember the links once Discord has them, so a failed or skipped delivery sends them again next time
 var delivered = await Discord.SendAsync(http, Environment.GetEnvironmentVariable("DISCORD_WEBHOOK"), title, sections);
-if (!dryRun && delivered) seen.Save();
+if (!dryRun && delivered)
+{
+    seen.Save();
+    File.WriteAllText(LastSentPath, today);
+}
 else if (!dryRun) Console.WriteLine("Nothing delivered, seen list left unchanged");
