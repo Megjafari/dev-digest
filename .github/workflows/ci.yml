@@ -3,17 +3,23 @@ name: ci
 on:
   push:
     branches: [main]
-    paths: ["src/**", "tests/**"]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# The pipelines come from Megjafari/platform-pipelines, pinned to the v1 release line
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
+  lint:
+    uses: Megjafari/platform-pipelines/.github/workflows/reusable-lint.yml@v1
+    permissions:
+      contents: read
 
-      - uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.0.x
-
-      - run: dotnet test tests/DevDigest.Tests
+  dotnet:
+    uses: Megjafari/platform-pipelines/.github/workflows/reusable-dotnet-ci.yml@v1
+    with:
+      dotnet-version: "10.0.x"

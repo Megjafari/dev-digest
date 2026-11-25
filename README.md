@@ -2,7 +2,7 @@
 
 # dev-digest
 
-**A daily news and job digest, delivered to Discord.**
+**A daily digest of tech news, a Bible verse and job ads, delivered to Discord.**
 
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-automated-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
@@ -25,13 +25,10 @@
 
 dev-digest is a .NET console app that runs every morning on GitHub Actions. It collects fresh headlines and job ads from RSS feeds and an open job API, groups them by source, and posts the result to a Discord channel as colored cards, one per section. Links already sent are remembered and skipped, so each link is normally delivered only once.
 
-Each digest starts with a verse of the day, followed by the sections below. Each section lists the new links, grouped by source:
+Each digest starts with a verse of the day. The tech and job sections list the new links, grouped by source:
 
 | Section | Sources | Notes |
 |---|---|---|
-| **War and conflicts** | Al Jazeera, BBC Middle East, The Guardian | Iran, USA, Israel and Palestine. Mixed perspectives on purpose, filtered by keywords |
-| **Iran** | BBC Persian, Independent Persian, Tehran Times, Press TV | In Persian and English. Independent and state-linked outlets side by side |
-| **Sweden** | SVT Nyheter, Dagens Nyheter, The Local Sweden | Swedish and English headlines |
 | **Backend and .NET** | Hacker News, .NET Blog, Andrew Lock, GitHub Blog, GitHub Changelog, PostgreSQL | C#, ASP.NET Core, databases and developer tools |
 | **DevOps and cloud** | CNCF, Kubernetes, Docker, Argo Project, HashiCorp, Azure Blog, Cloudflare, The New Stack, dev.to | Containers, GitOps, infrastructure as code and cloud |
 | **Security** | The Hacker News, Krebs on Security, GitHub Security | Vulnerabilities, incidents and supply chain |
@@ -76,11 +73,14 @@ flowchart TD
 dev-digest/
 ├── .github/workflows/
 │   ├── daily-digest.yml      scheduled run, posts to Discord
-│   └── ci.yml                runs the tests on push and pull requests
+│   ├── ci.yml                lint, format check, build, tests and coverage
+│   ├── codeql.yml            static security analysis
+│   ├── dependency-review.yml blocks vulnerable dependencies in pull requests
+│   └── pr-checks.yml         Conventional Commits title and a description on pull requests
 ├── digests/                  seen.json (initial state; later runs use the Actions cache)
 ├── src/DevDigest/
 │   ├── Program.cs            orchestration, about 40 lines
-│   ├── Config.cs             sources, keywords, per section instructions
+│   ├── Config.cs             sources, job searches, filters, colors
 │   ├── FeedReader.cs         RSS and Atom parsing, keyword filtering
 │   ├── JobSearch.cs          Platsbanken and JobTech Links clients
 │   ├── SeenStore.cs          sent-link memory
@@ -130,10 +130,12 @@ Sources, keywords, job searches, the senior and experience filters and section c
 ## Testing
 
 ```bash
-dotnet test tests/DevDigest.Tests
+dotnet test DevDigest.slnx
 ```
 
-The tests cover the logic that is easiest to get wrong: deduplication and batch limits in `SeenStore`, embed splitting and message packing in `Discord`, and keyword filtering in `FeedReader`. They run in CI on every push that touches `src/` or `tests/`, and on pull requests.
+The tests cover the logic that is easiest to get wrong: deduplication and batch limits in `SeenStore`, embed splitting and message packing in `Discord`, and keyword filtering in `FeedReader`. They run in CI on every push to `main` and on pull requests.
+
+CI uses the reusable workflows from [platform-pipelines](https://github.com/Megjafari/platform-pipelines), pinned to `@v1`: actionlint, yamllint and gitleaks, a `dotnet format` check, build, tests with coverage, CodeQL and dependency review. Renovate keeps NuGet packages and actions up to date.
 
 ## Design decisions
 
