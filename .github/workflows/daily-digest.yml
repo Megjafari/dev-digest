@@ -8,6 +8,11 @@ on:
 permissions:
   contents: read
 
+# A manual run and the schedule must not overlap, or both would start from the same seen list
+concurrency:
+  group: daily-digest
+  cancel-in-progress: false
+
 jobs:
   digest:
     runs-on: ubuntu-latest

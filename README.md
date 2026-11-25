@@ -23,7 +23,7 @@
 
 ## Overview
 
-dev-digest is a .NET console app that runs every morning on GitHub Actions. It collects fresh headlines and job ads from RSS feeds and an open job API, groups them by source, and posts the result to a Discord channel as colored cards, one per section. Every link is delivered exactly once.
+dev-digest is a .NET console app that runs every morning on GitHub Actions. It collects fresh headlines and job ads from RSS feeds and an open job API, groups them by source, and posts the result to a Discord channel as colored cards, one per section. Links already sent are remembered and skipped, so each link is normally delivered only once.
 
 Each digest starts with a verse of the day, followed by the sections below. Each section lists the new links, grouped by source:
 
@@ -64,7 +64,7 @@ flowchart TD
 
 1. **Collect.** `FeedReader` parses RSS and Atom feeds and applies keyword filters. `JobSearch` queries the JobTech API.
 2. **Deduplicate.** `SeenStore` keeps every link already sent in `digests/seen.json` and drops repeats. Entries are forgotten after 120 days so the file stays small.
-3. **Deliver.** `Digest` renders each section, and `Discord` posts them as embeds, packed into as few messages as Discord's limits allow. A section that is too long continues in the next embed, split on line breaks so no link is cut in half. If Discord rejects a message the run fails, so the seen list is not saved and the links are sent again the next day. A markdown copy is written to `digests/` on the runner.
+3. **Deliver.** `Digest` renders each section, and `Discord` posts them as embeds, packed into as few messages as Discord's limits allow. A section that is too long continues in the next embed, split on line breaks so no link is cut in half. The seen list is saved only after Discord has accepted every message. If Discord rejects a message the run fails and the links are sent again the next day, which can repeat the part that did get through. A markdown copy is written to `digests/` on the runner.
 4. **Persist.** The workflow keeps `seen.json` in the GitHub Actions cache. Nothing is committed.
 
 ### Project structure
@@ -105,7 +105,7 @@ export DISCORD_WEBHOOK="..."        # optional
 DRY_RUN=1 dotnet run --project src/DevDigest
 ```
 
-`DRY_RUN=1` writes to `digests-preview/` and leaves `seen.json` untouched, so local testing never affects what the scheduled run sends. Without `DISCORD_WEBHOOK` nothing is posted.
+`DRY_RUN=1` writes to `digests-preview/` and leaves `seen.json` untouched, so local testing never affects what the scheduled run sends. Without `DISCORD_WEBHOOK` nothing is posted and `seen.json` is not updated.
 
 ### Deploy on your own fork
 

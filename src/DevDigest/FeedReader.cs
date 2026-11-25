@@ -15,13 +15,13 @@ static class FeedReader
 
             return SyndicationFeed.Load(xml).Items
                 .OrderByDescending(i => i.PublishDate == default ? i.LastUpdatedTime : i.PublishDate)
-                .Take(40)
                 .Select(i => new Item(
                     feed.Name,
                     (i.Title?.Text ?? "(untitled)").Trim(),
                     i.Links.FirstOrDefault()?.Uri.ToString() ?? "",
                     Snippet(i)))
                 .Where(i => i.Link.Length > 0 && Matches(feed, i))
+                .Take(40) // after the keyword filter, so a matching item further down is not cut off
                 .ToList();
         }
         catch (Exception e)
