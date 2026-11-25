@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/DevDigest/DevDigest.csproj" />
+  <Project Path="tests/DevDigest.Tests/DevDigest.Tests.csproj" />
+</Solution>

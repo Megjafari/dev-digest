@@ -1,0 +1,16 @@
+name: pr-checks
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  pr-checks:
+    uses: Megjafari/platform-pipelines/.github/workflows/reusable-pr-checks.yml@v1
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
