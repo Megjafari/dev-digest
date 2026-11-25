@@ -32,7 +32,9 @@ Each digest starts with a verse of the day, followed by the sections below. Each
 | **War and conflicts** | Al Jazeera, BBC Middle East, The Guardian | Iran, USA, Israel and Palestine. Mixed perspectives on purpose, filtered by keywords |
 | **Iran** | BBC Persian, Independent Persian, Tehran Times, Press TV | In Persian and English. Independent and state-linked outlets side by side |
 | **Sweden** | SVT Nyheter, Dagens Nyheter, The Local Sweden | Swedish and English headlines |
-| **DevOps and software development** | Hacker News, dev.to, CNCF, Docker, Kubernetes, .NET Blog, Azure Blog, GitHub Changelog, PostgreSQL | Tuned for a backend and cloud developer |
+| **Backend and .NET** | Hacker News, .NET Blog, Andrew Lock, GitHub Blog, GitHub Changelog, PostgreSQL | C#, ASP.NET Core, databases and developer tools |
+| **DevOps and cloud** | CNCF, Kubernetes, Docker, Argo Project, HashiCorp, Azure Blog, Cloudflare, The New Stack, dev.to | Containers, GitOps, infrastructure as code and cloud |
+| **Security** | The Hacker News, Krebs on Security, GitHub Security | Vulnerabilities, incidents and supply chain |
 | **AI worldwide** | Hacker News, Simon Willison, The Verge, MIT Technology Review | Research, products and commentary |
 | **New job ads** | Arbetsförmedlingen JobTech API | Junior .NET, cloud and DevOps roles in Gothenburg |
 
