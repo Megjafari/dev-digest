@@ -4,7 +4,9 @@ static class Config
     public const int MaxJobs = 15;
 
     const string War = "War and conflicts";
-    const string Dev = "DevOps and software development";
+    const string Backend = "Backend and .NET";
+    const string DevOps = "DevOps and cloud";
+    const string Security = "Security";
     const string Ai = "AI worldwide";
     const string Iran = "Iran";
     const string Sweden = "Sweden";
@@ -35,15 +37,26 @@ static class Config
         new(Sweden, "Dagens Nyheter", "https://www.dn.se/rss/"),
         new(Sweden, "The Local Sweden", "https://www.thelocal.se/feed"),
 
-        new(Dev, "Hacker News", "https://hnrss.org/frontpage"),
-        new(Dev, "dev.to devops", "https://dev.to/feed/tag/devops"),
-        new(Dev, "CNCF", "https://www.cncf.io/feed/"),
-        new(Dev, "Docker Blog", "https://www.docker.com/blog/feed/"),
-        new(Dev, "Kubernetes", "https://kubernetes.io/feed.xml"),
-        new(Dev, ".NET Blog", "https://devblogs.microsoft.com/dotnet/feed/"),
-        new(Dev, "Azure Blog", "https://azure.microsoft.com/en-us/blog/feed/"),
-        new(Dev, "GitHub Changelog", "https://github.blog/changelog/feed/"),
-        new(Dev, "PostgreSQL", "https://www.postgresql.org/news.rss"),
+        new(Backend, "Hacker News", "https://hnrss.org/frontpage"),
+        new(Backend, ".NET Blog", "https://devblogs.microsoft.com/dotnet/feed/"),
+        new(Backend, "Andrew Lock", "https://andrewlock.net/rss.xml"),
+        new(Backend, "GitHub Blog", "https://github.blog/feed/"),
+        new(Backend, "GitHub Changelog", "https://github.blog/changelog/feed/"),
+        new(Backend, "PostgreSQL", "https://www.postgresql.org/news.rss"),
+
+        new(DevOps, "CNCF", "https://www.cncf.io/feed/"),
+        new(DevOps, "Kubernetes", "https://kubernetes.io/feed.xml"),
+        new(DevOps, "Docker Blog", "https://www.docker.com/blog/feed/"),
+        new(DevOps, "Argo Project", "https://blog.argoproj.io/feed"),
+        new(DevOps, "HashiCorp", "https://www.hashicorp.com/blog/feed.xml"),
+        new(DevOps, "Azure Blog", "https://azure.microsoft.com/en-us/blog/feed/"),
+        new(DevOps, "Cloudflare", "https://blog.cloudflare.com/rss/"),
+        new(DevOps, "The New Stack", "https://thenewstack.io/feed/"),
+        new(DevOps, "dev.to devops", "https://dev.to/feed/tag/devops"),
+
+        new(Security, "The Hacker News", "https://feeds.feedburner.com/TheHackersNews"),
+        new(Security, "Krebs on Security", "https://krebsonsecurity.com/feed/"),
+        new(Security, "GitHub Security", "https://github.blog/tag/security/feed/"),
 
         new(Ai, "Hacker News AI", "https://hnrss.org/newest?q=LLM&points=100"),
         new(Ai, "Simon Willison", "https://simonwillison.net/atom/everything/"),
@@ -70,7 +83,9 @@ static class Config
         [War] = 0xE74C3C,
         [Iran] = 0x16A085,
         [Sweden] = 0x3498DB,
-        [Dev] = 0x9B59B6,
+        [Backend] = 0x9B59B6,
+        [DevOps] = 0x1F8FD6,
+        [Security] = 0x7F8C8D,
         [Ai] = 0xE67E22,
     };
 }
