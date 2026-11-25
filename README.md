@@ -73,7 +73,10 @@ flowchart TD
 dev-digest/
 ├── .github/workflows/
 │   ├── daily-digest.yml      scheduled run, posts to Discord
-│   └── ci.yml                runs the tests on push and pull requests
+│   ├── ci.yml                lint, format check, build, tests and coverage
+│   ├── codeql.yml            static security analysis
+│   ├── dependency-review.yml blocks vulnerable dependencies in pull requests
+│   └── pr-checks.yml         Conventional Commits title and a description on pull requests
 ├── digests/                  seen.json (initial state; later runs use the Actions cache)
 ├── src/DevDigest/
 │   ├── Program.cs            orchestration, about 40 lines
@@ -127,10 +130,12 @@ Sources, keywords, job searches, the senior and experience filters and section c
 ## Testing
 
 ```bash
-dotnet test tests/DevDigest.Tests
+dotnet test DevDigest.slnx
 ```
 
-The tests cover the logic that is easiest to get wrong: deduplication and batch limits in `SeenStore`, embed splitting and message packing in `Discord`, and keyword filtering in `FeedReader`. They run in CI on every push that touches `src/` or `tests/`, and on pull requests.
+The tests cover the logic that is easiest to get wrong: deduplication and batch limits in `SeenStore`, embed splitting and message packing in `Discord`, and keyword filtering in `FeedReader`. They run in CI on every push to `main` and on pull requests.
+
+CI uses the reusable workflows from [platform-pipelines](https://github.com/Megjafari/platform-pipelines), pinned to `@v1`: actionlint, yamllint and gitleaks, a `dotnet format` check, build, tests with coverage, CodeQL and dependency review. Renovate keeps NuGet packages and actions up to date.
 
 ## Design decisions
 

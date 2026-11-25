@@ -1,0 +1,14 @@
+name: dependency-review
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    uses: Megjafari/platform-pipelines/.github/workflows/reusable-dependency-review.yml@v1
+    permissions:
+      contents: read
+      pull-requests: write
