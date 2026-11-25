@@ -7,6 +7,7 @@ static class Config
     // Job ads that ask for more years of experience than this are skipped
     public const int MaxYearsExperience = 3;
 
+    const string Christian = "Christian news";
     const string War = "War and conflicts";
     const string Backend = "Backend and .NET";
     const string DevOps = "DevOps and cloud";
@@ -26,6 +27,15 @@ static class Config
 
     public static readonly Feed[] Feeds =
     [
+        // First in the list, so the section comes right after the verse of the day
+        new(Christian, "Christianity Today", "https://www.christianitytoday.com/feed/"),
+        new(Christian, "The Christian Post", "https://www.christianpost.com/rss"),
+        new(Christian, "Dagen", "https://www.dagen.se/rss"),
+        new(Christian, "Mohabat News", "https://www.mohabatnews.com/index.php/feed"),
+        new(Christian, "International Christian Concern", "https://www.persecution.org/feed/"),
+        // No RSS, so read the JSON the site itself loads. The name is a markdown link to the site
+        new(Christian, "[Väckelse.nu](https://vackelse.nu/#top)", "https://vackelse.nu/data/results.json"),
+
         // Mixed perspectives on purpose, filtered by keywords
         new(War, "Al Jazeera", "https://www.aljazeera.com/xml/rss/all.xml", Conflict),
         new(War, "BBC Middle East", "https://feeds.bbci.co.uk/news/world/middle_east/rss.xml", Conflict),
@@ -104,6 +114,7 @@ static class Config
 
     public static readonly Dictionary<string, int> Colors = new()
     {
+        [Christian] = 0xE8DAEF,
         [War] = 0xE74C3C,
         [Iran] = 0x16A085,
         [Sweden] = 0x3498DB,
