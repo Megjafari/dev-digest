@@ -8,15 +8,18 @@ http.DefaultRequestHeaders.UserAgent.ParseAdd("dev-digest/1.0 (+https://github.c
 var seen = SeenStore.Load();
 var verse = await VerseOfTheDay.GetAsync(http);
 
-var news = "";
+var sections = new List<Section> { new("Verse of the day", verse, Config.VerseColor) };
+
 foreach (var group in Config.Feeds.GroupBy(f => f.Section))
 {
     var items = new List<Item>();
     foreach (var feed in group)
         items.AddRange(seen.TakeNew(await FeedReader.ReadAsync(http, feed), Config.PerFeed));
 
-    news += Digest.Render($"### {group.Key}", items);
+    if (items.Count > 0)
+        sections.Add(new(group.Key, Digest.Render(items), Config.Colors.GetValueOrDefault(group.Key, Config.DefaultColor)));
 }
+if (sections.Count == 1) sections.Add(new("News", "No new news today.", Config.DefaultColor));
 
 var jobs = new List<Item>();
 foreach (var query in Config.JobQueries)
@@ -24,9 +27,10 @@ foreach (var query in Config.JobQueries)
     if (jobs.Count >= Config.MaxJobs) break;
     jobs.AddRange(seen.TakeNew(await JobSearch.SearchAsync(http, query), Config.MaxJobs - jobs.Count));
 }
-var jobsMd = Digest.Render("## New job ads", jobs, "No new job ads today.", perSource: false);
+sections.Add(new("New job ads", jobs.Count > 0 ? Digest.Render(jobs, perSource: false) : "No new job ads today.", Config.JobsColor));
 
-var markdown = $"# Digest {today}\n\n{verse}## News\n\n{(news.Length > 0 ? news : "No new news today.\n\n")}{jobsMd}";
+var title = $"Digest {today}";
+var markdown = Digest.ToMarkdown(title, sections);
 
 var outDir = dryRun ? "digests-preview" : "digests";
 Directory.CreateDirectory(outDir);
@@ -36,4 +40,4 @@ Console.WriteLine($"Wrote {path}");
 
 if (!dryRun) seen.Save();
 
-await Discord.SendAsync(http, Environment.GetEnvironmentVariable("DISCORD_WEBHOOK"), markdown);
+await Discord.SendAsync(http, Environment.GetEnvironmentVariable("DISCORD_WEBHOOK"), title, sections);

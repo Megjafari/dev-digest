@@ -3,7 +3,7 @@ using System.Text.Json;
 static class VerseOfTheDay
 {
     // Used if the API cannot be reached, so the digest still has a verse link at the top
-    const string Fallback = "## Verse of the day\n\n[Today's verse on BibleGateway](https://www.biblegateway.com/)\n\n";
+    const string Fallback = "[Today's verse on BibleGateway](https://www.biblegateway.com/)";
 
     /// <summary>Today's verse from OurManna: the verse text, then the reference as a link to BibleGateway.</summary>
     public static async Task<string> GetAsync(HttpClient http)
@@ -25,8 +25,8 @@ static class VerseOfTheDay
             var source = $"[{reference}]({link}) ({version}, via OurManna)";
 
             return text.Length == 0
-                ? $"## Verse of the day\n\n{source}\n\n"
-                : $"## Verse of the day\n\n> {text}\n>\n> {source}\n\n";
+                ? source
+                : $"> {text}\n\n{source}";
         }
         catch (Exception e)
         {

@@ -59,4 +59,18 @@ static class Config
         "molnutvecklare azure",
         "junior systemutvecklare",
     ];
+
+    // Discord embed colors, the stripe on the left of each section
+    public const int VerseColor = 0xC9A227;
+    public const int JobsColor = 0x2ECC71;
+    public const int DefaultColor = 0x5865F2;
+
+    public static readonly Dictionary<string, int> Colors = new()
+    {
+        [War] = 0xE74C3C,
+        [Iran] = 0x16A085,
+        [Sweden] = 0x3498DB,
+        [Dev] = 0x9B59B6,
+        [Ai] = 0xE67E22,
+    };
 }
