@@ -1,7 +1,11 @@
 static class Config
 {
     public const int PerFeed = 3;
-    public const int MaxJobs = 15;
+    public const int MaxJobs = 20;
+    public const int MaxInternships = 10;
+
+    // Job ads that ask for more years of experience than this are skipped
+    public const int MaxYearsExperience = 3;
 
     const string War = "War and conflicts";
     const string Backend = "Backend and .NET";
@@ -65,17 +69,37 @@ static class Config
     ];
 
     // Swedish on purpose: the ads on JobTech are written in Swedish
+    // All job searches are limited to Göteborg and the IT occupation field, see JobSearch
     public static readonly string[] JobQueries =
     [
-        "devops göteborg",
-        ".NET utvecklare göteborg",
-        "molnutvecklare azure",
-        "junior systemutvecklare",
+        "junior utvecklare",
+        ".NET",
+        "C#",
+        "backend",
+        "devops",
+        "cloud engineer",
+        "platform engineer",
+        "site reliability",
+        "ci/cd",
+        "kubernetes",
+        "azure",
+    ];
+
+    // Few LIA places are posted on Platsbanken, so these searches are broad. Only ads with
+    // LIA, praktik, trainee or internship in the headline are kept (JobSearch.IsInternship).
+    public static readonly string[] InternshipQueries = ["LIA", "praktik", "praktikant", "internship", "trainee"];
+
+    // Job ads whose headline has one of these words are skipped, to keep the list to junior and mid level roles
+    public static readonly string[] SeniorWords =
+    [
+        "senior", "sr", "lead", "principal", "staff", "architect", "arkitekt",
+        "head of", "chef", "manager", "erfaren", "erfarna", "expert",
     ];
 
     // Discord embed colors, the stripe on the left of each section
     public const int VerseColor = 0xC9A227;
     public const int JobsColor = 0x2ECC71;
+    public const int InternshipColor = 0xF1C40F;
     public const int DefaultColor = 0x5865F2;
 
     public static readonly Dictionary<string, int> Colors = new()

@@ -36,7 +36,8 @@ Each digest starts with a verse of the day, followed by the sections below. Each
 | **DevOps and cloud** | CNCF, Kubernetes, Docker, Argo Project, HashiCorp, Azure Blog, Cloudflare, The New Stack, dev.to | Containers, GitOps, infrastructure as code and cloud |
 | **Security** | The Hacker News, Krebs on Security, GitHub Security | Vulnerabilities, incidents and supply chain |
 | **AI worldwide** | Hacker News, Simon Willison, The Verge, MIT Technology Review | Research, products and commentary |
-| **New job ads** | Arbetsförmedlingen JobTech API | Junior .NET, cloud and DevOps roles in Gothenburg |
+| **LIA and praktik** | JobTech: Platsbanken and JobTech Links | LIA, praktik, internship and trainee ads in IT in Gothenburg |
+| **New job ads** | JobTech: Platsbanken plus JobTech Links (ads from other Swedish job sites such as thehub.io and ingenjorsjobb.se) | IT jobs in Gothenburg: .NET, backend, DevOps, cloud, platform and CI/CD. Senior headlines and ads asking for more than 3 years of experience are skipped, and every search gets a fair share of the 20 ads per day |
 
 In Discord each section is an embed with its own color stripe. Illustrative content of one section (not real output):
 
@@ -64,7 +65,7 @@ flowchart TD
     C -. updates .-> H[digests/seen.json]
 ```
 
-1. **Collect.** `FeedReader` parses RSS and Atom feeds and applies keyword filters. `JobSearch` queries the JobTech API.
+1. **Collect.** `FeedReader` parses RSS and Atom feeds and applies keyword filters. `JobSearch` queries Platsbanken and JobTech Links.
 2. **Deduplicate.** `SeenStore` keeps every link already sent in `digests/seen.json` and drops repeats. Entries are forgotten after 120 days so the file stays small.
 3. **Deliver.** `Digest` renders each section, and `Discord` posts them as embeds, packed into as few messages as Discord's limits allow. A section that is too long continues in the next embed, split on line breaks so no link is cut in half. The seen list is saved only after Discord has accepted every message. If Discord rejects a message the run fails and the links are sent again the next day, which can repeat the part that did get through. A markdown copy is written to `digests/` on the runner.
 4. **Persist.** The workflow keeps `seen.json` in the GitHub Actions cache. Nothing is committed.
@@ -81,7 +82,7 @@ dev-digest/
 │   ├── Program.cs            orchestration, about 40 lines
 │   ├── Config.cs             sources, keywords, per section instructions
 │   ├── FeedReader.cs         RSS and Atom parsing, keyword filtering
-│   ├── JobSearch.cs          JobTech API client
+│   ├── JobSearch.cs          Platsbanken and JobTech Links clients
 │   ├── SeenStore.cs          sent-link memory
 │   ├── Digest.cs             renders sections as markdown
 │   ├── VerseOfTheDay.cs      verse of the day from OurManna, with a fallback link
@@ -124,7 +125,7 @@ The first run sends everything that is current. After that you only get what is 
 | `DISCORD_WEBHOOK` | Secret | For delivery | Where the digest is posted |
 | `DRY_RUN` | Env var | No | `1` writes to `digests-preview/` and does not update the seen list |
 
-Sources, keywords, job searches and section colors all live in `src/DevDigest/Config.cs`.
+Sources, keywords, job searches, the senior and experience filters and section colors all live in `src/DevDigest/Config.cs`.
 
 ## Testing
 
