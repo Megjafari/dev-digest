@@ -23,7 +23,7 @@
 
 ## Overview
 
-dev-digest is a .NET console app that runs every morning on GitHub Actions. It collects fresh headlines and job ads from RSS feeds and an open job API, groups them by source, and posts the result to a Discord channel. Every link is delivered exactly once.
+dev-digest is a .NET console app that runs every morning on GitHub Actions. It collects fresh headlines and job ads from RSS feeds and an open job API, groups them by source, and posts the result to a Discord channel as colored cards, one per section. Every link is delivered exactly once.
 
 Each digest starts with a verse of the day, followed by the sections below. Each section lists the new links, grouped by source:
 
@@ -36,7 +36,7 @@ Each digest starts with a verse of the day, followed by the sections below. Each
 | **AI worldwide** | Hacker News, Simon Willison, The Verge, MIT Technology Review | Research, products and commentary |
 | **New job ads** | Arbetsförmedlingen JobTech API | Junior .NET, cloud and DevOps roles in Gothenburg |
 
-Illustrative shape of one section (not real output):
+In Discord each section is an embed with its own color stripe. Illustrative content of one section (not real output):
 
 ```markdown
 ### AI worldwide
@@ -56,15 +56,15 @@ Illustrative shape of one section (not real output):
 flowchart TD
     A[RSS feeds and JobTech API] --> B[FeedReader / JobSearch]
     B --> C[SeenStore: drop links already sent]
-    C --> E[Digest: links as markdown]
+    C --> E[Digest: one section per topic]
     E --> F[digests/YYYY-MM-DD.md]
-    E --> G[Discord webhook]
+    E --> G[Discord webhook: one embed per section]
     C -. updates .-> H[digests/seen.json]
 ```
 
 1. **Collect.** `FeedReader` parses RSS and Atom feeds and applies keyword filters. `JobSearch` queries the JobTech API.
 2. **Deduplicate.** `SeenStore` keeps every link already sent in `digests/seen.json` and drops repeats. Entries are forgotten after 120 days so the file stays small.
-3. **Deliver.** `Digest` renders the markdown, which is saved to `digests/` and posted to Discord in several messages split on line breaks, so no link is cut in half.
+3. **Deliver.** `Digest` renders each section, and `Discord` posts them as embeds, packed into as few messages as Discord's limits allow. A section that is too long continues in the next embed, split on line breaks so no link is cut in half. If Discord rejects a message the run fails, so the seen list is not saved and the links are sent again the next day. A markdown copy is written to `digests/` on the runner.
 4. **Persist.** The workflow keeps `seen.json` in the GitHub Actions cache. Nothing is committed.
 
 ### Project structure
@@ -81,9 +81,9 @@ dev-digest/
 │   ├── FeedReader.cs         RSS and Atom parsing, keyword filtering
 │   ├── JobSearch.cs          JobTech API client
 │   ├── SeenStore.cs          sent-link memory
-│   ├── Digest.cs             renders one section as markdown
+│   ├── Digest.cs             renders sections as markdown
 │   ├── VerseOfTheDay.cs      verse of the day from OurManna, with a fallback link
-│   ├── Discord.cs            message splitting and delivery
+│   ├── Discord.cs            embeds, message packing and delivery
 │   └── Models.cs             Item and Feed records
 └── tests/DevDigest.Tests/    xUnit tests
 ```
@@ -122,7 +122,7 @@ The first run sends everything that is current. After that you only get what is 
 | `DISCORD_WEBHOOK` | Secret | For delivery | Where the digest is posted |
 | `DRY_RUN` | Env var | No | `1` writes to `digests-preview/` and does not update the seen list |
 
-Sources, keywords and job searches all live in `src/DevDigest/Config.cs`.
+Sources, keywords, job searches and section colors all live in `src/DevDigest/Config.cs`.
 
 ## Testing
 
@@ -130,7 +130,7 @@ Sources, keywords and job searches all live in `src/DevDigest/Config.cs`.
 dotnet test tests/DevDigest.Tests
 ```
 
-The tests cover the logic that is easiest to get wrong: deduplication and batch limits in `SeenStore`, message splitting in `Discord`, and keyword filtering in `FeedReader`. They run in CI on every push that touches `src/` or `tests/`, and on pull requests.
+The tests cover the logic that is easiest to get wrong: deduplication and batch limits in `SeenStore`, embed splitting and message packing in `Discord`, and keyword filtering in `FeedReader`. They run in CI on every push that touches `src/` or `tests/`, and on pull requests.
 
 ## Design decisions
 

@@ -8,18 +8,18 @@ public class DiscordSplitTests
     [Fact]
     public void Split_ReturnsOneChunk_WhenTextIsShort()
     {
-        var chunks = Discord.Split("line one\nline two").ToList();
+        var chunks = Discord.Split("line one\nline two", 4000).ToList();
 
         Assert.Single(chunks);
     }
 
     [Fact]
-    public void Split_NeverExceedsDiscordsLimit()
+    public void Split_NeverExceedsTheLimit()
     {
-        var chunks = Discord.Split(string.Join("\n", Lines(200))).ToList();
+        var chunks = Discord.Split(string.Join("\n", Lines(200)), 4000).ToList();
 
         Assert.True(chunks.Count > 1);
-        Assert.All(chunks, c => Assert.True(c.Length <= 2000));
+        Assert.All(chunks, c => Assert.True(c.Length <= 4000));
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public class DiscordSplitTests
     {
         var lines = Lines(200);
 
-        var chunks = Discord.Split(string.Join("\n", lines)).ToList();
+        var chunks = Discord.Split(string.Join("\n", lines), 4000).ToList();
 
         Assert.Equal(lines, string.Join("\n", chunks).Split('\n'));
     }
@@ -35,9 +35,9 @@ public class DiscordSplitTests
     [Fact]
     public void Split_TruncatesASingleLineThatIsLongerThanTheLimit()
     {
-        var chunks = Discord.Split(new string('x', 5000)).ToList();
+        var chunks = Discord.Split(new string('x', 5000), 4000).ToList();
 
         Assert.Single(chunks);
-        Assert.Equal(1900, chunks[0].Length);
+        Assert.Equal(4000, chunks[0].Length);
     }
 }
